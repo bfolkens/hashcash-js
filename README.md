@@ -28,7 +28,7 @@ console.log(stamp)
 Would output something like the following (except the trail):
 
 ```
-1:16:20180101000000:unique-data-goes-here::xDnc81q
+1:16:20180708232351:unique-data-goes-here::xDnc81q
 ```
 
 ## Assumptions

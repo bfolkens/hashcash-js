@@ -9,16 +9,36 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
+    "babel-eslint": "8.2.5",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-env": "^1.7.0",
     "chai": "^4.1.2",
     "chai-string": "^1.4.0",
-    "mocha": "^5.2.0"
+    "eslint": "4.19.1",
+    "eslint-config-airbnb-base": "13.0.0",
+    "eslint-plugin-import": "2.13.0",
+    "eslint-plugin-security": "1.4.0",
+    "mocha": "^5.2.0",
+    "nyc": "12.0.2"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "homepage": "https://github.com/bfolkens/hashcash-js#readme",
   "repository": {
     "url": "https://github.com/bfolkens/hashcash-js",
     "type": "git"
   },
+  "bugs": {
+    "url": "https://github.com/bfolkens/hashcash-js/issues"
+  },
+  "keywords": [
+    "spam",
+    "email",
+    "hashcash",
+    "crypto",
+    "security"
+  ],
   "main": "./lib/hashcash.js",
   "files": [
     "lib"
@@ -30,7 +50,9 @@
     "prebuild": "npm run clean && npm run init",
     "build": "babel src -d lib",
     "pretest": "npm run build",
-    "test": "mocha --require babel-core/register --colors"
+    "test": "mocha --require babel-core/register --colors",
+    "lint": "eslint --ext .js .",
+    "coverage": "nyc --require babel-register mocha"
   },
   "babel": {
     "presets": [

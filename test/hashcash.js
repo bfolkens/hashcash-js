@@ -1,4 +1,4 @@
-import Hashcash from 'hashcash'
+import Hashcash from '../src/hashcash'
 
 var chai = require('chai')
 var assert = chai.assert

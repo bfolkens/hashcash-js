@@ -1,4 +1,5 @@
 import * as crypto from 'crypto'
+import Uint1Array from 'uint1array'
 
 const hashcashTable = "0123456789/:" + "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -21,37 +22,32 @@ export default class Hashcash {
     }).join("")
   }
 
-  static hash(data) {
-      var alg = crypto.createHash("sha1")
-      alg.update(data)
-      return alg.digest("hex")
-  };
+  static sha1(data) {
+    const alg = crypto.createHash('sha1')
+    alg.update(data)
+    return alg.digest()
+  }
 
-  static generate(prefix, data) {
+  static generate(bitLength, data) {
     for (var l = 0; l < 25; l++) {
       var array = Array(l)
       for (var i = 0; i < l; i++) array[i] = 0
       do {
-        let challenge = data + this.toSuffix(array)
-        let cash = this.hash(challenge)
-        if (cash.startsWith(prefix)) {
-          return challenge
+        const challenge = data + '::' + this.toSuffix(array)
+        if (this.verify(bitLength, challenge)) {
+          return this.toSuffix(array)
         }
       } while (this.next(array))
     }
   }
 
-  static verify(challenge, prefix) {
-    const hashed = this.hash(challenge)
-    return hashed.startsWith(prefix)
+  static verify(bitLength, challenge) {
+    return this.checkBitmask(bitLength, this.sha1(challenge))
   }
 
   static generateStamp(bits, data) {
-    const prefix = this.prefixForBits(bits)
-    const challenge = this.generate(prefix, data)
-    const stamp = `1:${bits}:${this.timestamp()}:${data}::${challenge}`
-
-    return this.generate(prefix, stamp)
+    const challenge = this.generate(bits, data)
+    return `1:${bits}:${this.timestamp()}:${data}::${challenge}`
   }
 
   static timestamp() {
@@ -59,7 +55,11 @@ export default class Hashcash {
     return d.slice(0,19).replace(/[-:T]/g,"")
   }
 
-  static prefixForBits(bitCount) {
-    return new Array(Math.round(bitCount / 8) + 1).join("0")
+  // Check to ensure the +bitLength+ bits of 0's occur at start of +buffer+
+  static checkBitmask(bitLength, buffer) {
+    const bits = new Uint1Array(buffer.buffer)
+    const checkBits = bits.slice(0, bitLength)
+
+    return checkBits[0] == 0 && (checkBits.indexOf(1) >= bitLength - 1 || checkBits.indexOf(1) == -1)
   }
 }

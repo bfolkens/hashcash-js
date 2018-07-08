@@ -31,53 +31,41 @@ describe('Hashcash', () => {
     })
   })
 
-  describe('#hash(data)', () => {
-    it('creates a 40 character sha1 hash from data', () => {
-      const hashed = Hashcash.hash("test")
-      assert.lengthOf(hashed, 40)
+  describe('#generate(bits, data)', () => {
+    it('generates a challenge which hashes to matching a bitfield prefix of zeros', () => {
+      const data = "test"
+      const challenge = Hashcash.generate(8, data)
+      assert.deepEqual(challenge, "v")
     })
   })
 
-  describe('#generate(prefix, data)', () => {
-    it('generates a challenge matching a prefix', () => {
-      const challenge = Hashcash.generate("ff", "test::")
-      assert.startsWith(challenge, "test::")
-    })
-
-    it('generates a challenge which hashes to matching a prefix', () => {
-      const prefix = "007"
-      const challenge = Hashcash.generate(prefix, "test::")
-      const hashed = Hashcash.hash(challenge)
-
-      assert.startsWith(hashed, prefix)
-    })
-  })
-
-  describe('#verify(challenge, prefix)', () => {
+  describe('#verify(bitLength, challenge)', () => {
     it('verifies a challenge to prefix', () => {
-      const challenge = "test::COw"
-      assert.isTrue(Hashcash.verify(challenge, "4655"))
+      const challenge = "test::v"
+      assert.isTrue(Hashcash.verify(8, challenge))
     })
   })
 
   describe('#timestamp()', () => {
     it('generates a hashcash formatted timestamp', () => {
       const ts = Hashcash.timestamp()
-      assert.lengthOf(ts, 8)
+      assert.lengthOf(ts, 14)
     })
   })
 
-  describe('#prefixForBits(bitCount)', () => {
-    it('generates a prefix with padding of bitCount', () => {
-      const prefix = Hashcash.prefixForBits(40)
-      assert.deepEqual(prefix, "00000")
+  describe('#checkBitmask(bits, data)', () => {
+    it('checks if data matches a prefix', () => {
+      assert.isTrue(Hashcash.checkBitmask(8, new Uint8Array([0x0, 0xF])))
+    })
+    it('refutes if data does not match a prefix', () => {
+      assert.isFalse(Hashcash.checkBitmask(16, new Uint8Array([0x0, 0xF])))
     })
   })
 
   describe('#generateStamp(bitCount, data)', () => {
     it('creates a v1 hashcash stamp', () => {
-      const stamp = Hashcash.generateStamp(20, "test")
-      assert.match(stamp, /1:20:\d{8}:test::.+/)
+      const stamp = Hashcash.generateStamp(8, "test")
+      assert.match(stamp, /1:8:\d{14}:test::.+/)
     })
   })
 })

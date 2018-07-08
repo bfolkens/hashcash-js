@@ -56,7 +56,7 @@ export default class Hashcash {
 
   static timestamp() {
     const d = new Date().toISOString()
-    return d.slice(0, 4) + d.slice(5, 7) + d.slice(8, 10)
+    return d.slice(0,19).replace(/[-:T]/g,"")
   }
 
   static prefixForBits(bitCount) {

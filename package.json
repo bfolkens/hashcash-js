@@ -4,6 +4,7 @@
   "description": "Hashcash",
   "author": "Brad Folkens <bfolkens@gmail.com>",
   "dependencies": {
+    "lodash": ">=4.17.11",
     "uint1array": "^1.0.6"
   },
   "devDependencies": {
@@ -49,7 +50,7 @@
     "clean": "rm -rf lib",
     "prebuild": "npm run clean && npm run init",
     "build": "babel src -d lib",
-		"prepare": "npm run build",
+    "prepare": "npm run build",
     "pretest": "npm run build",
     "test": "mocha --require babel-core/register --colors",
     "lint": "eslint --ext .js .",
